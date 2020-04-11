@@ -7,18 +7,9 @@ Created on Thu Apr  9 20:36:27 2020
 """
 import metrics
 
-import numpy
-from scipy.ndimage import _ni_support
-from scipy.ndimage.morphology import distance_transform_edt, binary_erosion,\
-    generate_binary_structure
-from scipy.ndimage.measurements import label, find_objects
-from scipy.stats import pearsonr
-import os
+import numpy as np
 import os
 import shutil
-from time import time
-
-import numpy as np
 import SimpleITK as sitk
 import scipy.ndimage as ndimage
 
@@ -28,24 +19,20 @@ import scipy.ndimage as ndimage
 #The prediction mask and GT mask should have a same or similar name. 
 pathPrediction="prediction"
 pathGT="GT"
-label={"cavity":1, "normal_myocardium":2, "infarction":3, "NoReflow":4}
+
 dice=[]
-jaccard=[]
-HD95=[]
 HD=[]
-relativeAbsoluteVolumeDifference=[]
-averageSymmetricSurfaceDistance=[]
-averageSurfaceDistance=[]
-sensitivity=[]
-specifity=[]
-precision=[]
-recall=[]
-volumeCorrelation=[]
-volumeOverDifference=[]
-volumeChangeCorrelation=[]
-trueNegativeRate=[]
-truePositiveRate=[]
 volumeDifference=[]
+volumeDifferenceRate=[]
+volumePrediction=[]
+
+#class index in GT contour nifti{"background":0 ,"cavity":1, "normal_myocardium":2, "infarction":3, "NoReflow":4}
+#*********************************************
+#choose the tissue class you want to calculate here
+#label=("Myocardium", "Infarction", "No Reflow")
+label="No Reflow"
+#*********************************************
+
 for filePrediction in os.listdir(pathPrediction):
     #  load prediction mask as a nifiti, you can use nib.load as well for nifti
     prediction = sitk.ReadImage(os.path.join(pathPrediction, filePrediction), sitk.sitkInt16) 
@@ -57,67 +44,61 @@ for filePrediction in os.listdir(pathPrediction):
     GT = sitk.ReadImage(os.path.join(pathGT, filePrediction), sitk.sitkInt8) 
     GTArray = sitk.GetArrayFromImage(GT)
     spacing=GT.GetSpacing()
-    #  get the one hot GT mask of the indexing class
-    GTArray = GTArray==label["cavity"]
-    predArray = predArray==label["cavity"]
-    predArray[1:3] = np.zeros_like(predArray[1:3])
-    ###*****************choose the metrics to calculate*****************
-    dice.append(metrics.dc(predArray, GTArray))
-    jaccard.append(metrics.jc(predArray, GTArray))
-    HD95.append(metrics.hd95(predArray, GTArray))
-    HD.append(metrics.hd(predArray, GTArray))
     
-    relativeAbsoluteVolumeDifference.append(metrics.ravd(predArray, GTArray))
-    averageSymmetricSurfaceDistance.append(metrics.assd(predArray, GTArray, voxelspacing=spacing))
-    averageSurfaceDistance.append(metrics.asd(predArray, GTArray, voxelspacing=spacing))
+    #  get the one hot GT mask of the indexed class
+    if label=="Myocardium": #The Myocardium includes both the normal myocardium and scar tissue
+        aGTArray = (GTArray==2) + (GTArray==3) + (GTArray==4)
+        aPredArray = (predArray==2) + (predArray==3) + (predArray==4)
+        #aPredArray[1:3] = np.zeros_like(aPredArray[1:3])
+        
+    elif label=="Infarction":
+        aGTArray = GTArray==3
+        aPredArray = predArray==3
+        #aPredArray[1:3] = np.zeros_like(aPredArray[1:3])
+        
+    elif label=="No Reflow":
+        aGTArray = GTArray==4
+        aPredArray = predArray==4
+        #aPredArray[1:3] = np.zeros_like(aPredArray[1:3])
+    else:
+        raise NameError('Unknown class name')
+    ###*****************metrics calculation*****************
+    ###*****************commun metrics******************
+    dice.append(metrics.dc(aPredArray, aGTArray))
+    aVolumePred=metrics.volume(aPredArray, spacing)
+    aVolumeGT=metrics.volume(aGTArray, spacing)
+    volumePrediction.append(aVolumePred)
+    volumeDifference.append(abs(aVolumePred-aVolumeGT))
     
-    sensitivity.append(metrics.sensitivity(predArray, GTArray))
-    specifity.append(metrics.specificity(predArray, GTArray))
-    precision.append(metrics.precision(predArray, GTArray))
-    recall.append(metrics.recall(predArray, GTArray))
-    
-    volumeCorrelation.append(metrics.volume_correlation(predArray, GTArray)[1])
-    volumeOverDifference.append(metrics.volumeofff(predArray, GTArray))
-    volumeChangeCorrelation.append(metrics.volume_change_correlation(predArray, GTArray))
-    
-    trueNegativeRate.append(metrics.true_negative_rate(predArray, GTArray))
-    truePositiveRate.append(metrics.true_positive_rate(predArray, GTArray))
-    
-    volumeDifference.append(abs(metrics.volume(predArray, spacing)-metrics.volume(GTArray, spacing)))
+    ###****************metric for myocardium***********
+    if label=="Myocardium":
+        HD.append(metrics.hd(predArray, GTArray))
+        
+    ###****************metric for scar tissues***********
+    else:
+        aVolumeMyo=metrics.volume((GTArray==2) + (GTArray==3) + (GTArray==4), spacing)
+        volumeDifferenceRate.append(abs(aVolumePred-aVolumeGT)/aVolumeMyo)
+        
 
 
-np.savetxt('csv/dice.csv', dice, delimiter=',', fmt='%f')
-np.savetxt('csv/jaccard.csv', jaccard, delimiter=',', fmt='%f')
-np.savetxt('csv/HD95.csv', HD95, delimiter=',', fmt='%f')
-np.savetxt('csv/HD.csv', HD, delimiter=',', fmt='%f')    
-
-np.savetxt('csv/ASD.csv', averageSurfaceDistance, delimiter=',', fmt='%f')  
-np.savetxt('csv/ASSD.csv', averageSymmetricSurfaceDistance, delimiter=',', fmt='%f') 
-np.savetxt('csv/RAVD.csv', relativeAbsoluteVolumeDifference, delimiter=',', fmt='%f')
-
-np.savetxt('csv/specifity.csv', specifity, delimiter=',', fmt='%f')
-np.savetxt('csv/sensitivity.csv', sensitivity, delimiter=',', fmt='%f')
-np.savetxt('csv/precision.csv', precision, delimiter=',', fmt='%f')
-
-np.savetxt('csv/VOE.csv', volumeOverDifference, delimiter=',', fmt='%f')
-np.savetxt('csv/VC.csv', volumeCorrelation, delimiter=',', fmt='%f') 
-np.savetxt('csv/VCC.csv', volumeChangeCorrelation, delimiter=',', fmt='%f')    
     
-np.savetxt('csv/TPR.csv', truePositiveRate, delimiter=',', fmt='%f') 
-np.savetxt('csv/TNR.csv', trueNegativeRate, delimiter=',', fmt='%f') 
-
-np.savetxt('csv/volume.csv', volumeDifference, delimiter=',', fmt='%f')
 
 avgDice = float(sum(dice))/len(dice)
-avgJaccard= float(sum(jaccard))/len(jaccard)
-avgHd95 = float(sum(HD95))/len(HD95)
-avgHd= float(sum(HD))/len(HD)
-avgSpecifity = float(sum(specifity))/len(specifity)
-avgSensitivity= float(sum(sensitivity))/len(sensitivity)
-avgVOE = float(sum(volumeOverDifference))/len(volumeOverDifference)
-avgVC= float(sum(volumeCorrelation))/len(volumeCorrelation)
-avgASSD = float(sum(averageSymmetricSurfaceDistance))/len(averageSymmetricSurfaceDistance)
-avgRAVD= float(sum(relativeAbsoluteVolumeDifference))/len(relativeAbsoluteVolumeDifference)
+avgVD= float(sum(volumeDifference))/len(volumeDifference)
+if label=="Myocardium":
+    avgHd= float(sum(HD))/len(HD)
+else:
+    avgVDR= float(sum(volumeDifferenceRate))/len(volumeDifferenceRate)
+
+'''
+#comment the csv you don't want to save
+np.savetxt('csv/dice.csv', dice, delimiter=',', fmt='%f')
+np.savetxt('csv/HD.csv', HD, delimiter=',', fmt='%f')    
+np.savetxt('csv/volumeDif.csv', volumeDifference, delimiter=',', fmt='%f')
+np.savetxt('csv/volume.csv', volumePrediction, delimiter=',', fmt='%f')
+np.savetxt('csv/volumeDifRate.csv', volumeDifferenceRate, delimiter=',', fmt='%f')
+'''
+
 
 
     
