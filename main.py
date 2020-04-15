@@ -30,18 +30,18 @@ volumePrediction=[]
 #*********************************************
 #choose the tissue class you want to calculate here
 #label=("Myocardium", "Infarction", "No Reflow")
-label="No Reflow"
+label="Infarction"
 #*********************************************
 
 for filePrediction in os.listdir(pathPrediction):
     #  load prediction mask as a nifiti, you can use nib.load as well for nifti
-    prediction = sitk.ReadImage(os.path.join(pathPrediction, filePrediction), sitk.sitkInt16) 
+    prediction = sitk.ReadImage(os.path.join(pathPrediction, filePrediction, 'Contours', filePrediction+'.nii.gz'), sitk.sitkInt16) 
     #  the prediction mask array should be one hot format
     predArray = sitk.GetArrayFromImage(prediction)  # convert into numpy array
 
     # load GT mask. 
     # You should modify the GT file name if its name is different to the prediction file
-    GT = sitk.ReadImage(os.path.join(pathGT, filePrediction), sitk.sitkInt8) 
+    GT = sitk.ReadImage(os.path.join(pathGT, filePrediction, 'Contours', filePrediction+'.nii.gz'), sitk.sitkInt16) 
     GTArray = sitk.GetArrayFromImage(GT)
     spacing=GT.GetSpacing()
     
@@ -69,7 +69,7 @@ for filePrediction in os.listdir(pathPrediction):
     aVolumeGT=metrics.volume(aGTArray, spacing)
     volumePrediction.append(aVolumePred)
     volumeDifference.append(abs(aVolumePred-aVolumeGT))
-    
+    print(filePrediction, aVolumePred)
     ###****************metric for myocardium***********
     if label=="Myocardium":
         HD.append(metrics.hd(predArray, GTArray))
