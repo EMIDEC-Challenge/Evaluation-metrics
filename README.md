@@ -1,10 +1,9 @@
 # Evaluation-metrics
-This is the evaluation code for cardiac MRI predictions with given metrics.
+This is the evaluation code for cardiac MRI prediction with given metrics.
 
 
 # How to use
-Prepare your prediction masks and the groud truth masks as the following instructions. Then in the "main.py" define your mask paths by the variables "pathPrediction" and "pathGT", and specify the class
-you want to evaluate by the varibale "label". You can save your result on .csv by uncommenting the last section.
+Prepare your prediction masks and the groud truth masks as the following instructions. Then in the "main.py" define your mask paths by the variables "pathPrediction" and "pathGT", and specify the class you want to evaluate by the varibale "label". You can save your result on .csv by uncommenting the last section.
 
 You may need to install some dependencies by:
 
@@ -13,9 +12,9 @@ You may need to install some dependencies by:
 
 
 # Metrics
-For the myocardium, the Dice, the difference of the volumes, and the Hausdorff distance will be calculated between the grand truth and the prediction to evaluate the prediction masks' performance.
+Evaluation of the myocardium segmentation: the Dice, the difference of the volumes, and the Hausdorff distance will be calculated between the grand truth and the prediction.
 
-For the scar tissues including the myocardiul infarction and the No-Reflow, the Dice, the difference of the volumes, and the difference rate of the volumes will be calculated between the grand truth and the prediction.
+Evaluation of the scar tissues including the myocardial infarction and the No-Reflow: the Dice, the difference of the volumes, and the difference rate of the volumes.
 
 The Dice is calculated firstly on each slice (2D), then the Dice of the case is the average of all the slices. 
 
@@ -24,9 +23,9 @@ The difference of the volumes between the GT and the prediction is the absolute 
 The difference rate of the volumes between the GT and the prediction is calculated as the (difference of the scar tissue volume)/(myocardium volume). This metric can describe more objectively the scar tissue prediction's quality.
 
 
-#  Files orgnization
-The default file orgnization should be similar to the dataset.
-You should have 2 folders to put your predictions and the corresponding GTs. Both of them should have the same orgnization.
+#  Files organization
+The default file organization should be similar to the dataset.
+You should have 2 folders to put your predictions and the corresponding GTs. Both of them should have the same organization.
 For example,
 
 root / GT / CaseX / Contours / CaseX.nii.gz
