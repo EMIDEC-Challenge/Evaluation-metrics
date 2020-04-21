@@ -27,14 +27,11 @@ The difference rate of the volumes between the GT and the prediction is calculat
 #  Files orgnization
 The default file orgnization should be similar to the dataset.
 You should have 2 folders to put your predictions and the corresponding GTs. Both of them should have the same orgnization.
-For example, 
-root - GT - Case1 - Contours - Case1.nii.gz
-	 |	  |-Case2 - Contours - Case2.nii.gz
-	 |	  |-CaseX - Contours - CaseX.nii.gz	
-	 |
-	 |-prediction- Case1 - Contours - Case1.nii.gz
-	 	        |- Case2 - Contours - Case2.nii.gz
-	 	  	    |- CaseX - Contours - CaseX.nii.gz	
+For example,
+
+root / GT / CaseX / Contours / CaseX.nii.gz
+
+root / prediction / CaseX / Contours / CaseX.nii.gz	
 
 #  Mask file format and encoding
 This code loads the prediction and the GT mask from nifti files by default. You should take the contour nifti files from the dataset as the GT. Your prediction mask should have the same encoding as the mask in the dataset, that is: the mask should be encoded as catagorical labels from 0 to 4. The label and the class are {"background":0 ,"cavity":1, "normal_myocardium":2, "infarction":3, "NoReflow":4}. Notice that to evaluate the prediction of the myocardium, the mask labels should be the ensemble of 2,3 and 4.
