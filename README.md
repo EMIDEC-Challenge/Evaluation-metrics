@@ -21,7 +21,7 @@ The Dice is calculated firstly on each slice (2D), then the Dice of the case is 
 
 The difference of the volumes between the GT and the prediction is the absolute difference between the prediction volume and the GT volume. The voxel spacing is taken into account and the unit is mm³.
 
-The difference rate of the volumes between the GT and the prediction is calculated as the (difference of the scar tissu volume)/(myocardium volume). This metric can describe more objectively the scar tissu prediction's quality.
+The difference rate of the volumes between the GT and the prediction is calculated as the (difference of the scar tissue volume)/(myocardium volume). This metric can describe more objectively the scar tissue prediction's quality.
 
 
 #  Files orgnization
