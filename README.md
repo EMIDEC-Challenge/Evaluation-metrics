@@ -3,7 +3,7 @@ This is the evaluation code for cardiac MRI prediction with given metrics.
 
 
 # How to use
-Prepare your prediction masks and the groud truth masks as the following instructions. Then in the "main.py" define your mask paths by the variables "pathPrediction" and "pathGT", and specify the class you want to evaluate by the varibale "label". You can save your result on .csv by uncommenting the last section.
+Prepare your prediction masks and the ground truth masks as the following instructions. Then in the "main.py" define your mask paths by the variables "pathPrediction" and "pathGT", and specify the class you want to evaluate by the varibale "label". You can save your result on .csv by uncommenting the last section.
 
 You may need to install some dependencies by:
 
