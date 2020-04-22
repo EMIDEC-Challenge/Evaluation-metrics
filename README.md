@@ -25,11 +25,11 @@ Optionally, you can give only the parameter CLASS_NAME, the default prediction a
 To prepare your prediction masks and the ground truth masks, please refer to the following instructions. 
 
 # Metrics
-The applied metrics depend on the class of tissue.
+The applied metrics depend on the class of segmented tissue. 
 
-Evaluation of the myocardium segmentation: the Dice, the difference of the volumes, and the Hausdorff distance will be calculated between the grand truth and the prediction.
+Evaluation of the myocardium segmentation: the Dice index, the difference of the volumes, and the Hausdorff distance will be calculated between the grand truth and the prediction.
 
-Evaluation of the scar tissues segmentation including the myocardial infarction and the No-Reflow: the Dice, the difference of the volumes, and the difference of the ratio (disease volume / myocardium volume).
+Evaluation of the scar tissues segmentation including the myocardial infarction and the No-Reflow: the Dice index, the difference of the volumes, and the difference of the ratio (disease volume / myocardium volume).
 
 The Dice index is calculated firstly on each slice (2D), then the Dice index of the case is the average of all the slices. 
 
@@ -49,4 +49,5 @@ root / GT / CaseX / Contours / CaseX.nii.gz
 root / prediction / CaseX / Contours / CaseX.nii.gz	
 
 #  Mask file format and encoding
-This code loads the prediction and the GT mask from nifti files by default. You should take the contour nifti files from the dataset as the GT. Your prediction mask should have the same encoding as the mask in the dataset, that is: the mask should be encoded as categorical labels from 0 to 4. The label and the class are {"background":0 ,"cavity":1, "normal_myocardium":2, "infarction":3, "NoReflow":4}. Notice that to evaluate the prediction of the myocardium, the mask labels should be the ensemble of 2,3 and 4.
+This code loads the prediction and the GT mask from nifti files by default. You should take the contour nifti files from the dataset as the GT. Your prediction mask should have the same encoding as the mask in the dataset, that is: the mask should be encoded as categorical labels from 0 to 4. The label and the class are {"background":0 ,"cavity":1, "normal_myocardium":2, "infarction":3, "NoReflow":4}. 
+Notice that to evaluate the prediction of the myocardium, the mask labels should be the ensemble of 2,3 and 4.
