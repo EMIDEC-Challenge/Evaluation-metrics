@@ -30,7 +30,7 @@ def main():
         pathPrediction="prediction"
         pathGT="GT"
     else:
-        print("Parameter error. Please check How To Use in the Readme" )
+        print("Parameter error. Please check How To Use in the Readme." )
         sys.exit(0)
     
 
@@ -60,8 +60,8 @@ def main():
             #aPredArray[1:3] = np.zeros_like(aPredArray[1:3])
             
         elif label=="Infarction":
-            aGTArray = GTArray==3
-            aPredArray = predArray==3
+            aGTArray = (GTArray==3) + (GTArray==4)
+            aPredArray = (predArray==3) + (predArray==4)
             #aPredArray[3:4] = np.zeros_like(aPredArray[3:4])
             
         elif label=="NoReflow":
@@ -88,10 +88,10 @@ def main():
             volumeDifferenceRate.append(abs(aVolumePred-aVolumeGT)/aVolumeMyo)
             
     
-    np.savetxt('csv/volume.csv', volumePrediction, delimiter=',', fmt='%f')
+
     avgDice = float(sum(dice))/len(dice)
-    print("Average Dice: ", round(avgDice, 4))
-    np.savetxt('csv/dice.csv', dice, delimiter=',', fmt='%f')
+    print("Average Dice index: ", "{:.2%}".format(avgDice))
+    np.savetxt('csv/Dice.csv', dice, delimiter=',', fmt='%f')
     avgVD= float(sum(volumeDifference))/len(volumeDifference)
     print("Average volume difference: ", round(avgVD, 2), "mm\N{SUPERSCRIPT THREE}")
     np.savetxt('csv/volumeDif.csv', volumeDifference, delimiter=',', fmt='%f')
@@ -101,8 +101,8 @@ def main():
         np.savetxt('csv/HD.csv', HD, delimiter=',', fmt='%f')   
     else:
         avgVDR= float(sum(volumeDifferenceRate))/len(volumeDifferenceRate)
-        print("Average volume difference ratio according to volume of myocardium: ", round(avgVDR, 4))
-        np.savetxt('csv/volumeDifRate.csv', volumeDifferenceRate, delimiter=',', fmt='%f')
+        print("Average volume difference ratio according to volume of myocardium: ", "{:.2%}".format(avgVDR))
+        np.savetxt('csv/volumeDifRatio.csv', volumeDifferenceRate, delimiter=',', fmt='%f')
     
 
 if __name__ == "__main__":
