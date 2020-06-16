@@ -288,7 +288,7 @@ def true_negative_rate(result, reference):
     :func:`true_positive_rate` 
     :func:`positive_predictive_value`
     """
-    return sensitivity(result, reference)
+    return specificity(result, reference)
 
 def true_positive_rate(result, reference):
     """
