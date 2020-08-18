@@ -57,7 +57,7 @@ def dc(result, reference):
     This is a real metric. The binary images can therefore be supplied in any order.
     In case of True Negative, the dice is defined as 1
     """
-    """
+    
     #Dice in 3D
     result = numpy.atleast_1d(result.astype(numpy.bool))
     reference = numpy.atleast_1d(reference.astype(numpy.bool))
@@ -71,9 +71,9 @@ def dc(result, reference):
         dc = 2. * intersection / float(size_i1 + size_i2)
     except ZeroDivisionError:
         dc = 1.
-    """   
-    
-    
+     
+    return dc
+    """
     #Dice in 2D: the Dice is firstly calculated per slice, then return the average of each slice the Dice of the Case
     result = result.astype(numpy.bool)
     reference = reference.astype(numpy.bool) 
@@ -91,7 +91,8 @@ def dc(result, reference):
     
     
     return dc/result.shape[0]
-
+    """
+    
 def jc(result, reference):
     """
     Jaccard coefficient

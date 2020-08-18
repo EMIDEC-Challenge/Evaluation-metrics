@@ -1,5 +1,5 @@
 # Evaluation-metrics
-This is the evaluation code for cardiac MRI prediction with given metrics.
+This is the evaluation code for cardiac MRI segmentation with given metrics.
 
 
 # How to use
@@ -31,7 +31,7 @@ Evaluation of the myocardium segmentation: the Dice index, the difference of the
 
 Evaluation of the scar tissues segmentation including the myocardial infarction and the No-Reflow: the Dice index, the difference of the volumes, and the difference of the ratio (disease volume / myocardium volume).
 
-The Dice index is calculated firstly on each slice (2D), then the Dice index of the case is the average of all the slices. 
+The Dice index is calculated on the entire myocardium (3D): all the slices are considered as in a single image. This calculation has less penalty for false-positive and false-negative segmentation on ambiguous slices.
 
 The difference of the volumes between the GT and the prediction is the absolute difference between the prediction volume and the GT volume. The voxel spacing is taken into account and the unit is mm³.
 
